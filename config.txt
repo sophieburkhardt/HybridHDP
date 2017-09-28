@@ -1,0 +1,19 @@
+####Hybrid HDP topic model, incremental training with fixed test set
+-dataFilename data/kos_train -testDataFilename data/kos_test -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5 -incremental_fixed -hyb_hdp -beta 0.01 -maxTopicNumber 100 -batchSize 100 -k 100 -supervised false -trainingPercentage 0.95 -evaluationInterval 1 -writeDistributions false -parallelEvaluation false -print true -reversed false -b1 1 -b0 1 -updateIterations 10 -burninIterations 4 -useOriginalSampler false -numMHIterations 1 -readInstancelist false -kappa 0.6 -run 1
+-dataFilename data/KOS-train.instancelist -testDataFilename data/KOS-test.instancelist -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5 -incremental_fixed -hyb_hdp -beta 0.01 -maxTopicNumber 100 -batchSize 100 -k 100 -supervised false -trainingPercentage 0.95 -evaluationInterval 1 -writeDistributions false -parallelEvaluation false -print true -reversed false -b1 1 -b0 1 -updateIterations 10 -burninIterations 4 -useOriginalSampler false -numMHIterations 1 -readInstancelist true -kappa 0.6 -run 1
+
+####HDP with original sampler, batch training
+-dataFilename data/KOS-train.instancelist -testDataFilename data/KOS-test.instancelist -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5  -batch -hdp -whichSampler standard -supervised false -trainingPercentage 1.0 -evaluationInterval 1 -writeDistributions false -print true -beta 0.01 -updateConcentration true -maxTopicNumber 1000 -numMHIterations 1 -interval 10 -k 10 -readInstancelist true -maxN 15000 -maxM 5000 -initN 10000 -initM 1000 -b0 1 -b1 1 -run 1
+
+####HDP with Li sampler, batch training
+-dataFilename data/KOS-train.instancelist -testDataFilename data/KOS-test.instancelist -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5  -batch -hdp -whichSampler li -supervised false -trainingPercentage 1.0 -evaluationInterval 1 -writeDistributions false -print true -beta 0.01 -updateConcentration true -maxTopicNumber 1000 -numMHIterations 1 -interval 10 -k 10 -readInstancelist true -maxN 15000 -maxM 5000 -initN 10000 -initM 1000 -b0 1 -b1 1 -run 1
+
+####HDP with our improved alias sampler, batch training
+-dataFilename data/KOS-train.instancelist -testDataFilename data/KOS-test.instancelist -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5  -batch -hdp -whichSampler myalias2 -supervised false -trainingPercentage 1.0 -evaluationInterval 1 -writeDistributions false -print true -beta 0.01 -updateConcentration true -maxTopicNumber 1000 -numMHIterations 1 -interval 10 -k 10 -readInstancelist true -maxN 15000 -maxM 5000 -initN 10000 -initM 1000 -b0 1 -b1 1 -run 1
+
+####Hybrid LDA topic model
+-dataFilename data/KOS-train.instancelist -testDataFilename data/KOS-test.instancelist -datasetName kos -numIterations 1000 -numTopWords 20 -wordThreshold 5  -incremental_fixed -hyb_lda -batchSize 100 -supervised false -trainingPercentage 1.0 -evaluationInterval 1 -alpha 0.1 -beta 0.01 -updateIterations 10 -burninIterations 4 -useOriginalSampler false -readInstancelist true -kappa 0.6 -t 100 -print true -run 1
+
+
+
+
