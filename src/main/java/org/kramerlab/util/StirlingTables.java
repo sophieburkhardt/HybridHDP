@@ -1,3 +1,19 @@
+/**
+ * StirlingTables.java
+ *
+ * This code is modified from the C-library libstb-1.8.2
+ * Copyright 2011-2013 Wray Buntine (wray.buntine@nicta.com.au)
+ *             Lan Du (lan.du@nicta.com.au)
+ *
+ * It was licensed under:
+ * Mozilla Public License, v.2.0. If a copy of the MPL was not
+ * distributed with this file, You can obtain one at
+ *     http://mozilla.org/MPL/2.0/.
+ * 
+ *
+ */
+
+
 package org.kramerlab.util;
 
 import java.util.Arrays;

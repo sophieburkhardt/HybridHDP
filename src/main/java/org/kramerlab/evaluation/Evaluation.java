@@ -1,3 +1,12 @@
+/**
+ * Evaluation.java
+ *
+ *
+ * This code was adapted from Meka, which is licensed under GNU General Public License v3.0
+ *
+ */
+
+
 package org.kramerlab.evaluation;
 
 import cc.mallet.types.IDSorter;
