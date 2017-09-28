@@ -190,12 +190,7 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
         this.alphabet = instances.getDataAlphabet();
         this.numTypes = alphabet.size();
         init(numTypes);
-        //int c = 0;
         for(Instance instance:instances){
-            //if(c%1000==0&&c>1){
-            //  System.out.println("instances added: "+c);
-            //}
-            //c++;
             GenericRestaurant docRest = new GenericRestaurant();
             FeatureSequence tokens = (FeatureSequence) instance.getData();
             int docLength = tokens.size();
@@ -211,12 +206,9 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                     int chosenrank = random.nextInt(local_numLabels);
                     int topic = unsupervised?chosenrank:labelVector.indexAtLocation(chosenrank);
                     increaseTypeTopic(typeTopicCounts[type],type,topic,topic);
-                    //typeTopicCounts[type][topic]++;
-                    //tokensPerTopic[topic]++;
                     topics[position] = topic;
                     docRest.add(topic);
                     if(docRest.numCustomersPerTopic.get(topic)==1){
-                        //System.out.println("hier");
                         hdp.getRoot().add(topic);
                     }
                 }
@@ -249,8 +241,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
             rejects2=0;
             accepts1=0;
             accepts2=0;
-            //System.out.println("update "+this.updateConcentration+" "+iter+" "+(iter+1));
-            //if(iter>=10&&(iter+1)%10==0&&this.updateConcentration){
             if(this.updateConcentration){
                 this.hdp.sampleb0();
                 this.hdp.sampleb1();
@@ -260,10 +250,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
     }
 
     public void sampleTopicsForOneDoc(FeatureSequence wordTokens,FeatureSequence topicSequence,FeatureVector labels,GenericRestaurant docRestaurant,int docRestaurantIndex){
-    
-        //if(unsupervised) evaluate = true;
-        //        System.out.println("sample "+docRestaurantIndex);
-        //int numLabels = labels.numLocations();
         int[] topics = topicSequence.getFeatures();
         int docLength = topicSequence.size();
         double[] probabilities = null;
@@ -274,7 +260,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
 
         for(int position = 0;position<docLength;++position){
             type = wordTokens.getIndexAtPosition(position);
-            //((AbstractAliasHDP)this.hdp).clearSamples();
             currentTypeTopicCounts = typeTopicCounts[type];
             oldTopic = topics[position];
             oldTopicIndex = indicesForTopics.get(oldTopic);
@@ -289,50 +274,13 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                 }
                 if(!evaluate){
                     decreaseTypeTopic(currentTypeTopicCounts,type,oldTopic,oldTopicIndex);
-                    //currentTypeTopicCounts[oldTopicIndex]--;
-                    //tokensPerTopic[oldTopicIndex]--;
                     if(tableRemoved==1){
                         hdp.getRoot().remove(oldTopic,true);
                         oldTableIndicator = 1;
                     }
                     if(!hdp.getRoot().hasTopic(oldTopic)){
                         oldTableIndicator = 0;
-                        /*
-                        //if the topic was completely removed
-                        System.out.println("topic "+oldTopic+ " was removed");
-                        this.numTopics--;
-                        ((AbstractAliasHDP)this.hdp).clearSamples();
-                        this.activeTopics.remove(oldTopicIndex);
-                        //decrease indices of higher topics
-                        for(int ind = oldTopicIndex;ind<activeTopics.size();++ind){
-                            int top = activeTopics.get(ind);
-                            int oldIndex = indicesForTopics.get(top);
-                            indicesForTopics.put(top,oldIndex-1);
-                        }
-                        int[] newTokensPerTopic = new int[tokensPerTopic.length-1];
-                        int[][] newTypeTopicCounts = new int[typeTopicCounts.length][typeTopicCounts[0].length-1];
-                        int c = 0;
-                        for(int top = 0;top<tokensPerTopic.length;++top){
-                            if(top<oldTopicIndex){
-                                newTokensPerTopic[c] = tokensPerTopic[top];
-                                for(int typ = 0;typ<typeTopicCounts.length;++typ){
-                                    newTypeTopicCounts[typ][c] = typeTopicCounts[typ][top];
-                                }
-                                c++;
-                            }else if(top>oldTopicIndex){
-                                newTokensPerTopic[c] = tokensPerTopic[top];
-                                for(int typ = 0;typ<typeTopicCounts.length;++typ){
-                                    newTypeTopicCounts[typ][c] = typeTopicCounts[typ][top];                                    
-                                }
-                                c++;                          
-                            }
-                        }
-                        this.tokensPerTopic = newTokensPerTopic;
-                        this.typeTopicCounts = newTypeTopicCounts;
-                        //System.out.println("indicesForTopics: "+indicesForTopics+" "+activeTopics);
-                        currentTypeTopicCounts = typeTopicCounts[type];
-                        oldTopicIndex=-1;
-                        */
+
                     }
                 }
                 CalcProb calcProb = new MultinomialCalcProb(currentTypeTopicCounts,tokensPerTopic,beta,betaSum);
@@ -352,8 +300,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                         tableIndicator = samplingResult[1];
                         newTopicIndex = samplingResult[0];
                         newTopic = activeTopics.get(newTopicIndex);
-                        //oldTableIndicator = docRestaurant.sampleOldTableConfiguration(oldTopic);
-                        //if(!evaluate){
                         boolean accept = ((AbstractAliasHDP)hdp).mh(oldTopic,newTopic,oldTopicIndex,newTopicIndex,oldTableIndicator,tableIndicator,calcProb,type,docRestaurantIndex,true);
                         if(!accept){
                             if(tableIndicator==1){
@@ -376,7 +322,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                             oldTableIndicator = tableIndicator;
                         }
                     }
-                        //}
                 }
                 if(newTopicIndex>numTopics-1||!this.hdp.getRoot().hasTopic(newTopic)){
                     //new supertopic
@@ -393,8 +338,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                 topics[position] = newTopic;
                 if(!evaluate){
                     increaseTypeTopic(currentTypeTopicCounts,type,newTopic,newTopicIndex);
-                    //currentTypeTopicCounts[newTopicIndex]++;
-                    //tokensPerTopic[newTopicIndex]++;
                 }
             }else{
                 notAllowed++;
@@ -433,11 +376,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
             topics[position]=randomTopic;
             docRestaurant.add(topics[position]);
         }
-        /*int[] allLabels = new int[numTopics];
-          for(int i = 0;i<allLabels.length;++i){
-          allLabels[i]=i;
-          }
-          FeatureVector labels = new FeatureVector(topicAlphabet,allLabels);*/
         LabelSequence topicSequence =
             new LabelSequence(topicAlphabet, topics);
         topics = topicSequence.getFeatures();
@@ -446,9 +384,7 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
 
         for(int i = 0;i<numIterations;++i){            
             this.sampleTopicsForOneDoc(tokenSequence,topicSequence,null,docRestaurant,this.hdp.restaurants.size()-1);
-            //System.out.println(Arrays.toString(topics));
             if(i%thinning==0&&i>burnin){
-                //System.out.println(i+" "+Arrays.toString(topics)+" "+this.hdp.restaurants.size());
                 for(int pos=0;pos<docLength;++pos){
                     int top = topics[pos];
                     if(top>result.length-1){
@@ -457,50 +393,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                     result[top]+=1;
                     norm+=1;
                 }
-                /*
-                  for(int pos=0;pos<docLength;++pos){
-                  int type = tokenSequence.getIndexAtPosition(pos);
-
-                  for(int top = 0;top<numTopics;++top){
-
-                  double val = (typeTopicCounts[type][top]+beta)/(tokensPerTopic[top]+betaSum)*hdp.getTopicProbabilityMass(docRestaurant,top);
-                  result[top]+=val;
-                  norm+=val;
-                  }*/
-                //            }
-
-                /*int[] localTokensPerDTopic = new int[numSuperTopics];
-                  for(int position=0;position<docLength;++position){
-                  localTokensPerDTopic[dtopics[position]]++;
-                  }*/
-                /*double totalMass = 0;
-                  for(int topic =  0;topic<numTopics;++topic){
-                  totalMass += hdp.getTopicProbabilityMass(docRestaurant,topic);
-                  }
-
-                  //analogously to MyDependencyLDA
-                  for(int label = 0;label<numTopics;++label){
-                  //for(int topicIndex = 0;topicIndex<numSubTopics;++topicIndex){
-                  //  int topic = activeSubTopics.get(topicIndex);
-                  double labelval=0;
-                  for(int position = 0;position<docLength;++position){
-                  int type = tokenSequence.getIndexAtPosition(position);
-
-
-                  double mass = hdp.getTopicProbabilityMass(docRestaurant,label);
-                  double val = (typeTopicCounts[type][label]+beta)/(tokensPerTopic[label]+betaSum)*mass;
-                  labelval+=val;
-                  }
-                  if(docLength>0){
-                  labelval/=docLength;
-                  }else{
-                  labelval = 0.01;
-                  }
-                  result[label]+=labelval;
-                  norm+=labelval;
-                  //}
-                  }
-                */
             }
         }
         //normalize
@@ -541,36 +433,22 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                }
            }
        }
-            BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-            int allsum = 0;
-            int tabsum = 0;
-            for(int subTopicIndex = 0;subTopicIndex<numTopics;++subTopicIndex){
-                allsum+=tokensPerTopic[subTopicIndex];
-                tabsum+=this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex)==null?0:this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex);
-            }
-            for(int subTopicIndex = 0;subTopicIndex<numTopics;++subTopicIndex){
-                int num2 = this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex)==null?0:this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex);
-                bw.write((realFreqs[subTopicIndex]/(double)sumRealFreqs)+" "+(num2/(double)tabsum)+"\n");
-            }
-            /*
-            for(int subTopicIndex = 0;subTopicIndex<numTopics;++subTopicIndex){
-                int num = tokensPerTopic[subTopicIndex];
-                int num2 = this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex);
-                bw.write(topicAlphabet.lookupObject(subTopicIndex)+"("+(num/(double)allsum)+" "+(num2/(double)tabsum)+")"+": ");
-                IDSorter[] topWords = topWords(subTopicIndex);
-                for(int wordIndex = 0;wordIndex<numWords;++wordIndex){
-                    int word = topWords[wordIndex].getID();
-                    if(topWords[wordIndex].getWeight()>0){
-                        bw.write((String)this.alphabet.lookupObject(word)+" ");
-                    }
-                }
-                bw.write("\n");
-                }*/
-            bw.flush();
-            bw.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+       BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+       int allsum = 0;
+       int tabsum = 0;
+       for(int subTopicIndex = 0;subTopicIndex<numTopics;++subTopicIndex){
+           allsum+=tokensPerTopic[subTopicIndex];
+           tabsum+=this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex)==null?0:this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex);
+       }
+       for(int subTopicIndex = 0;subTopicIndex<numTopics;++subTopicIndex){
+           int num2 = this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex)==null?0:this.hdp.getRoot().numCustomersPerTopic.get(subTopicIndex);
+           bw.write((realFreqs[subTopicIndex]/(double)sumRealFreqs)+" "+(num2/(double)tabsum)+"\n");
+       }
+       bw.flush();
+       bw.close();
+   }catch(Exception e){
+       e.printStackTrace();
+   }
     }
 
     public Inferencer getInferencer(){
@@ -588,17 +466,12 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
     }
 
     public double getTestingLoglikelihood(InstanceList data){
-        //this.unsupervised=false;
-        //System.out.println("evaluate: "+evaluate);
         this.evaluate=true;
         rejects1=0;
         rejects2=0;
         accepts1=0;
         accepts2=0;
     
-        //if(this.hdp instanceof AbstractAliasHDP){
-        //((AbstractAliasHDP)this.hdp).clearSamples();
-        //}
         double likelihood = 0;
         int numTokens = 0;
         for(Instance instance: data){
@@ -606,39 +479,11 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                 (FeatureSequence) instance.getData();
             int docLength = tokenSequence.getLength();
             numTokens+=docLength;
-            /*GenericRestaurant docRestaurant = new GenericRestaurant();
-            int[] topics = new int[docLength];
-            //initializeAliasInferencer(topics,numIterations);
-            for(int position = 0;position<docLength;++position){
-                topics[position]=activeTopics.get(random.nextInt(numTopics));
-                docRestaurant.add(topics[position]);
-            }
-            int[] allLabels = new int[numTopics];
-            for(int i = 0;i<allLabels.length;++i){
-                allLabels[i]=i;
-            }
-            FeatureVector labels = new FeatureVector(topicAlphabet,allLabels);
-            LabelSequence topicSequence =
-                new LabelSequence(topicAlphabet, topics);
-            topics = topicSequence.getFeatures();
-
-            this.hdp.add(docRestaurant);
-            for(int i = 0;i<10;++i){
-                //sample a few times
-                this.sampleTopicsForOneDoc(tokenSequence,topicSequence,labels,docRestaurant,this.hdp.restaurants.size()-1);
-                }*/
             double[] distribution = this.getSampledDistribution(instance,10,1,4);
             double docLikelihood = getDocLikelihood(distribution,tokenSequence);
             likelihood+=docLikelihood;
-            //this.hdp.remove(this.hdp.restaurants.size()-1);
-            //System.out.println(this.hdp.restaurants.size()+" "+ ((AbstractAliasHDP)this.hdp).topicSamples.size());
         }
-        //this.unsupervised=true;
         this.evaluate=false;
-        //if(this.hdp instanceof AbstractAliasHDP){
-        //  ((AbstractAliasHDP)this.hdp).clearSamples();
-        //}
-        //System.out.println("Evaluation: "+(rejects2+rejects1)/(double)(rejects1+rejects2+accepts1+accepts2)+" "+(rejects1)/(double)(rejects1+rejects2+accepts1+accepts2)+" "+(rejects2)/(double)(rejects1+rejects2+accepts1+accepts2));
         rejects1=0;
         rejects2=0;
         accepts1=0;
@@ -701,12 +546,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
                 docProbs[top]+=0.01;
                 docProbs[top]/=((tokensPerTopic.length*0.01)+wordTokens.size());
             }
-            /*int[] typeCounts = new int[numTypes];
-            for(int pos = 0;pos<wordTokens.size();++pos){
-                int type = wordTokens.getIndexAtPosition(pos);
-                //int topic = topics.getIndexAtPosition(pos);
-                typeCounts[type]+=1;
-                }*/
             for(int pos = 0;pos<wordTokens.size();++pos){
                 int type = wordTokens.getIndexAtPosition(pos);
                 double typePerp = 0;
@@ -718,7 +557,6 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
             }
             loglikelihood+=docPerp;
         }
-        //perplexity/=tokenSum;
         return loglikelihood/tokenSum;
     }
 
