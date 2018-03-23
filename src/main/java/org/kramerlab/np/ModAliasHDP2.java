@@ -166,7 +166,7 @@ public class ModAliasHDP2 extends AbstractAliasHDP{
                     int tpt = this.root.numCustomersPerTopic.get(topic);
                     newTopicProb=newTopicProb(tpt,rootB,restaurantB,numTokens,a,restaurant.numTables,fix);
                 }
-                q[arrayIndex]=mult*newTopicProb/(restaurantB+this.a*restaurant.numTables);
+                q[arrayIndex]=mult*newTopicProb;///(restaurantB+this.a*restaurant.numTables);
             }
             qnorm += q[arrayIndex];
         }
@@ -259,7 +259,7 @@ public class ModAliasHDP2 extends AbstractAliasHDP{
             }
 
             p[arrayIndex]=mult*oldTable;
-            p[arrayIndex+1]=mult*newTable-q[index]*qnorm*(restaurantB+this.a*restaurant.numTables);
+            p[arrayIndex+1]=mult*newTable-q[index]*qnorm;//*(restaurantB+this.a*restaurant.numTables);
             
             if(p[arrayIndex]<0)System.out.println("negative p!!! "+p[arrayIndex]+" "+tt+" "+customersPerTopic+" "+mult+" "+oldTable);
             pnorm += p[arrayIndex];
