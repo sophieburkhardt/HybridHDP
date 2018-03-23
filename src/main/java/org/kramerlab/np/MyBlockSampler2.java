@@ -358,7 +358,7 @@ public class MyBlockSampler2 implements TopicModel,Inferencer{
 
 
     public double[] getSampledDistribution(Instance instance,int numIterations,int thinning,int burnin){
-        if(this.hdp instanceof AliasHDP)((AbstractAliasHDP)this.hdp).clearSamples();
+        if(this.hdp instanceof AliasHDP or this.hdp instanceof LiAliasHDP)((AbstractAliasHDP)this.hdp).clearSamples();
         double[] result = new double[numTopics];
         double norm = 0;
         FeatureSequence tokenSequence =
